@@ -60,10 +60,14 @@ int main(int argc, char **argv)
             con = client(input);
             reversi_run(type, con);
         }
-        else
+        else if (type == 3)
         {
-            printf("ERROR!\n");
+            reversi_run(3, 0);
         }
+        else if (type == 4){
+            reversi_run(4, 0);
+        }
+        else printf("ERROR!\n");
     }
     else{
         printf("ERROR!\n");

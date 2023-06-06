@@ -151,8 +151,36 @@ int reversi_run(int type, int conn_fd)
         reversi_term();
         return 0;
     }
-    else
+    else if (type == 4)
     {
+        while (1)
+        {
+            if (turn == 1)
+            {
+                while (!(reversi_input(&coord, turn, conn_fd) == 0 && g_mod == MOVE))
+                {
+                }
+            }
+            else
+            {
+                reversi_ai_move(&coord, turn);
+                sleep(1);
+            }
+            reversi_flip(coord);
+
+            turn = -1 * turn;
+            if (reversi_available(turn) == 0)
+            {
+                if (reversi_available(turn * -1) == 0)
+                {
+                    reversi_refresh();
+                    break;
+                }
+            }
+            reversi_refresh();
+        }
+        reversi_term();
+        return 0;
     }
 }
 
