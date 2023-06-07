@@ -155,16 +155,9 @@ int reversi_run(int type, int conn_fd)
     {
         while (1)
         {
-            if (turn == 1)
+
+            while (!(reversi_input(&coord, turn, conn_fd) == 0 && g_mod == MOVE))
             {
-                while (!(reversi_input(&coord, turn, conn_fd) == 0 && g_mod == MOVE))
-                {
-                }
-            }
-            else
-            {
-                reversi_ai_move(&coord, turn);
-                sleep(1);
             }
             reversi_flip(coord);
 
@@ -218,6 +211,13 @@ int reversi_input(coord_st *coord, int turn, int conn_fd)
     char str[51];
     int str_len = 0;
     int print = 1;
+    char *m = (char *)malloc(sizeof(char) * 51);
+    if (turn == -1)
+        sprintf(m, "Enter next move (WHITE)");
+    if (turn == 1)
+        sprintf(m, "Enter next move (BLACK)");
+    message(m);
+    free(m);
     do
     {
         c = key_input(print);
