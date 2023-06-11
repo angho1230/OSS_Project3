@@ -43,7 +43,8 @@ int reversi_run(int conn_fd)
                 is_r = 0; is_in = 0;
                 is_in = reversi_input(&txt_s, turn, &str_len) ;
                 is_r = recv_input(&txt_r, sizeof(text), conn_fd) ;
-                if(is_in == 1 || is_r == 1) break;
+                if(is_in == 0 && is_r == 0) continue;
+                break;
             }
             if (is_in == 1)
             {
