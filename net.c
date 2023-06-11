@@ -157,7 +157,7 @@ int recv_input(void * t, int size, int conn_fd){
 	int r = 0;
 	r = recv(conn_fd, t, size, 0);
 	timeout(0);
-	if(r == 0){
+	if(r==0){
 		return 0;
 	}
 	else{

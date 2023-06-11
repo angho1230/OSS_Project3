@@ -33,17 +33,19 @@ int reversi_run(int conn_fd)
     text txt_r;
     int str_len = 0;
 
-
     if (type == 1)
     {
         while (1)
         {
             int is_r = 0, is_in = 0;
-            while (1){
-                is_r = 0; is_in = 0;
-                is_in = reversi_input(&txt_s, turn, &str_len) ;
-                is_r = recv_input(&txt_r, sizeof(text), conn_fd) ;
-                if(is_in == 0 && is_r == 0) continue;
+            while (1)
+            {
+                is_r = 0;
+                is_in = 0;
+                is_in = reversi_input(&txt_s, turn, &str_len);
+                is_r = recv_input(&txt_r, sizeof(text), conn_fd);
+                if (is_in == 0 && is_r == 0)
+                    continue;
                 break;
             }
             if (is_in == 1)
@@ -54,17 +56,12 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
                     {
                         if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
-                        {
-                            txt_s.c[0] = '\0';
-                            continue;
-                        }
-                        if (reversi_check(coord) != 0)
                         {
                             txt_s.c[0] = '\0';
                             continue;
@@ -76,7 +73,7 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
@@ -150,10 +147,15 @@ int reversi_run(int conn_fd)
         while (1)
         {
             int is_r = 0, is_in = 0;
-            while (1){
+            while (1)
+            {
+                is_r = 0;
+                is_in = 0;
                 is_in = reversi_input(&txt_s, turn, &str_len);
                 is_r = recv_input(&txt_r, sizeof(text), conn_fd);
-                if(is_in == 1 || is_r == 1) break;
+                if (is_in == 0 && is_r == 0)
+                    continue;
+                break;
             }
             if (is_in == 1)
             {
@@ -163,17 +165,12 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
                     {
                         if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
-                        {
-                            txt_s.c[0] = '\0';
-                            continue;
-                        }
-                        if (reversi_check(coord) != 0)
                         {
                             txt_s.c[0] = '\0';
                             continue;
@@ -185,7 +182,7 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
@@ -517,10 +514,10 @@ int reversi_input(coord_st *coord, int turn, int conn_fd)
     return 0;
 }*/
 
-int reversi_input(text *txt, int turn, int* str_len)
+int reversi_input(text *txt, int turn, int *str_len)
 {
     char c;
-    int max_str = 50;
+    int max_str = 10;
     int print = 1;
     c = key_input(print);
     if (c == 0)
@@ -551,8 +548,8 @@ int reversi_input(text *txt, int turn, int* str_len)
     {
         if (*str_len > 0)
         {
-            txt->c[*str_len - 1] = '\0';
-            *str_len--;
+            txt->c[(*str_len) - 1] = '\0';
+            *str_len = (*str_len) - 1;
             print = 1;
         }
     }
@@ -571,7 +568,7 @@ int reversi_input(text *txt, int turn, int* str_len)
             }
         }
         txt->c[*str_len] = c;
-        *str_len++;
+        *str_len = (*str_len) + 1;
         txt->c[*str_len] = '\0';
     }
     return 0;
@@ -607,7 +604,6 @@ int reversi_input_to_coord(coord_st *coord, int turn, char *str)
     free(message);
     return 0;
 }
-
 
 int reversi_check(coord_st coord)
 {
