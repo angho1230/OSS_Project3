@@ -2,7 +2,8 @@
 #include <stdlib.h> 
 #include <unistd.h> 
 #include <string.h> 
-
+#include <time.h>
+#include <ncurses.h>
 #include <sys/socket.h> 
 #include <sys/types.h>
 #include <netinet/in.h> 
@@ -153,7 +154,9 @@ int client (char (*input)[128])
 
 int recv_input(void * t, int size, int conn_fd){
 	
-	int r = recv(conn_fd, t, size, 0);
+	int r = 0;
+	r = recv(conn_fd, t, size, 0);
+	timeout(0);
 	if(r == 0){
 		return 0;
 	}

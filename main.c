@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     else if (argc == 4)
     {
         if (strcmp(argv[1],"-client")==0){
+            type = 2;
             char input[2][128];
             strcpy(input[0],argv[2]);
             strcpy(input[1],argv[3]);
