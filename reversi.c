@@ -9,6 +9,7 @@
 #include <netinet/tcp.h>
 #include <linux/socket.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 #include "reversi.h"
 #include "draw.h"
@@ -19,6 +20,20 @@ extern int g_y;
 extern char messages[7][51];
 extern int board[8][8];
 extern int type;
+
+static int is_r;
+
+typedef struct thread_s
+{
+    text *t;
+    int conn_fd;
+} ts;
+
+void *recv_thread(void *tv)
+{
+    ts *t = (ts *)tv;
+    is_r = recv_input(t->t, sizeof(text), t->conn_fd);
+}
 
 int reversi_run(int conn_fd)
 {
@@ -33,17 +48,31 @@ int reversi_run(int conn_fd)
     text txt_r;
     int str_len = 0;
 
-
     if (type == 1)
     {
         while (1)
         {
-            int is_r = 0, is_in = 0;
-            while (1){
-                is_r = 0; is_in = 0;
-                is_in = reversi_input(&txt_s, turn, &str_len) ;
-                is_r = recv_input(&txt_r, sizeof(text), conn_fd) ;
-                if(is_in == 0 && is_r == 0) continue;
+            int is_in = 0;
+            int t_c = 0;
+            ts struct_for_thread = {&txt_r, conn_fd};
+            while (1)
+            {
+                is_r = 0;
+                is_in = 0;
+                if (t_c == 0)
+                {
+                    pthread_t tid;
+                    is_r = pthread_create(&tid, NULL, recv_thread, &struct_for_thread);
+                    t_c = 1;
+                }
+                is_in = reversi_input(&txt_s, turn, &str_len);
+                // is_r = recv_input(&txt_r, sizeof(text), conn_fd);
+                if (is_in == 0 && is_r == 0)
+                    continue;
+                if (is_r == 1)
+                {
+                    t_c = 0;
+                }
                 break;
             }
             if (is_in == 1)
@@ -54,17 +83,13 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
                     {
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
-                        {
-                            txt_s.c[0] = '\0';
-                            continue;
-                        }
-                        if (reversi_check(coord) != 0)
                         {
                             txt_s.c[0] = '\0';
                             continue;
@@ -76,7 +101,7 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
@@ -116,14 +141,14 @@ int reversi_run(int conn_fd)
                     }
                     else
                     {
-                        if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
+                        if (reversi_input_to_coord(&coord, turn, txt_r.c) != 0)
                         {
                             continue;
                         }
-                        if (reversi_check(coord) != 0)
-                        {
-                            continue;
-                        }
+                        char *m = malloc(sizeof(char) * 51 + 2);
+                        sprintf(m, "move (%d, %d)", coord.x_co, coord.y_co);
+                        add_messages(m);
+                        free(m);
                     }
                 }
             }
@@ -149,11 +174,28 @@ int reversi_run(int conn_fd)
     {
         while (1)
         {
-            int is_r = 0, is_in = 0;
-            while (1){
+            int is_in = 0;
+            int t_c = 0;
+            ts struct_for_thread = {&txt_r, conn_fd};
+            while (1)
+            {
+                is_r = 0;
+                is_in = 0;
+                if (t_c == 0)
+                {
+                    pthread_t tid;
+                    is_r = pthread_create(&tid, NULL, recv_thread, &struct_for_thread);
+                    t_c = 1;
+                }
                 is_in = reversi_input(&txt_s, turn, &str_len);
-                is_r = recv_input(&txt_r, sizeof(text), conn_fd);
-                if(is_in == 1 || is_r == 1) break;
+                // is_r = recv_input(&txt_r, sizeof(text), conn_fd);
+                if (is_in == 0 && is_r == 0)
+                    continue;
+                if (is_r == 1)
+                {
+                    t_c = 0;
+                }
+                break;
             }
             if (is_in == 1)
             {
@@ -163,17 +205,13 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
                     {
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
-                        {
-                            txt_s.c[0] = '\0';
-                            continue;
-                        }
-                        if (reversi_check(coord) != 0)
                         {
                             txt_s.c[0] = '\0';
                             continue;
@@ -185,7 +223,7 @@ int reversi_run(int conn_fd)
                     if (txt_s.mod == CHAT)
                     {
                         add_messages(txt_s.c);
-                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        send(conn_fd, &txt_s, sizeof(text), 0);
                         continue;
                     }
                     else
@@ -198,7 +236,7 @@ int reversi_run(int conn_fd)
             }
             else if (is_r == 1)
             {
-                if (turn == 1)
+                if (turn == player)
                 {
                     if (txt_r.mod == CHAT)
                     {
@@ -225,14 +263,18 @@ int reversi_run(int conn_fd)
                     }
                     else
                     {
-                        if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
+                        if (reversi_input_to_coord(&coord, turn, txt_r.c) != 0)
                         {
+                            char *m = malloc(sizeof(char) * 51 + 2);
+                            sprintf(m, "move (%s)", txt_r.c);
+                            add_messages(m);
+                            free(m);
                             continue;
                         }
-                        if (reversi_check(coord) != 0)
-                        {
-                            continue;
-                        }
+                        char *m = malloc(sizeof(char) * 51 + 2);
+                        sprintf(m, "move (%d, %d)", coord.x_co, coord.y_co);
+                        add_messages(m);
+                        free(m);
                     }
                 }
             }
@@ -517,10 +559,10 @@ int reversi_input(coord_st *coord, int turn, int conn_fd)
     return 0;
 }*/
 
-int reversi_input(text *txt, int turn, int* str_len)
+int reversi_input(text *txt, int turn, int *str_len)
 {
     char c;
-    int max_str = 50;
+    int max_str = 10;
     int print = 1;
     c = key_input(print);
     if (c == 0)
@@ -551,8 +593,8 @@ int reversi_input(text *txt, int turn, int* str_len)
     {
         if (*str_len > 0)
         {
-            txt->c[*str_len - 1] = '\0';
-            *str_len--;
+            txt->c[(*str_len) - 1] = '\0';
+            *str_len = (*str_len) - 1;
             print = 1;
         }
     }
@@ -571,7 +613,7 @@ int reversi_input(text *txt, int turn, int* str_len)
             }
         }
         txt->c[*str_len] = c;
-        *str_len++;
+        *str_len = (*str_len) + 1;
         txt->c[*str_len] = '\0';
     }
     return 0;
@@ -607,7 +649,6 @@ int reversi_input_to_coord(coord_st *coord, int turn, char *str)
     free(message);
     return 0;
 }
-
 
 int reversi_check(coord_st coord)
 {

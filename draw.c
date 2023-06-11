@@ -133,6 +133,7 @@ char key_input(int print)
 
 	c = getch();
 	timeout(0);
+	if(c==0) return 0;
 	switch (c)
 	{
 	case '\t':
