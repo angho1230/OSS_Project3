@@ -31,21 +31,17 @@ int reversi_run(int type, int conn_fd)
     coord_st coord = {0, 0, 1};
     text txt;
     if (type == 1)
-    {/*
+    {
         while (1)
         {
             if (turn == 1)
             {
-                while (!(reversi_input(&coord, turn, conn_fd) == 0 && g_mod == MOVE))
+                while ((reversi_input(&coord, turn, conn_fd) == 0 && g_mod == CHAT))
                 {
                 }
             }
             else
             {
-                int s;
-                while ((recv_input(conn_fd, &txt)) != 0){
-                
-                }
                 else if (txt.mod == CHAT)
                 {
                     char *m = malloc(sizeof(char) * 51 + 2);
@@ -72,7 +68,7 @@ int reversi_run(int type, int conn_fd)
             reversi_refresh();
         }
         reversi_term();
-        return 0;*/
+        return 0;
     }
     else if (type == 2)
     {
@@ -80,15 +76,13 @@ int reversi_run(int type, int conn_fd)
         {
             if (turn == -1)
             {
-                while (!(reversi_input(&coord, turn, conn_fd) == 0 && g_mod == MOVE))
+                while ((reversi_input(&coord, turn, conn_fd) == 0 && g_mod == CHAT)||recv_input(txt))
                 {
                 }
             }
             else
             {
                 int s;
-                while ((s = recv(conn_fd, &txt, sizeof(text), 0)) == 0)
-                    ;
                 if (s == -1)
                     break;
                 else if (txt.mod == CHAT)
