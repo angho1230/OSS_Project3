@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 #include <ncurses.h>
 #include "draw.h"
 
@@ -131,6 +132,7 @@ char key_input(int print)
 	int c = 0;
 
 	c = getch();
+	timeout(0);
 	switch (c)
 	{
 	case '\t':

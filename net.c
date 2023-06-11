@@ -150,19 +150,14 @@ int client (char (*input)[128])
 
 	return conn_fd ;
 } 
-/*
 
-int recv_input(text * t, int conn_fd){
-	while(1){	
-		while(recv(conn_fd, t, sizeof(text), 0) == 0){
-		}
-		if(t->mod == CHAT){
-			return CHAT;
-		}
-		else{
-			return MOVE;
-		}
-
+int recv_input(void * t, int size, int conn_fd){
+	
+	int r = recv(conn_fd, t, size, 0);
+	if(r == 0){
+		return 0;
+	}
+	else{
+		return 1;
 	}
 }
-*/

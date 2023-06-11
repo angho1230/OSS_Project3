@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <string.h>
 #include "reversi.h"
-#include "net.h"
 
 int g_mod;
 int g_x;
 int g_y;
 char messages[7][51];
 int board[8][8];
+int type;
 
 int main(int argc, char **argv)
 {
     int con;
-    int type;
     if (argc == 3)
     {
         if (strcmp(argv[1],"-server")==0){
+
             con = host(argv[2]);
             type = 1;
-            reversi_run(type, con);
+            reversi_run(con);
         }
         else printf("ERROR!\n");
     }
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
             strcpy(input[0],argv[2]);
             strcpy(input[1],argv[3]);
             con = client(input);
-            reversi_run(type, con);
+            reversi_run(con);
         }
         else printf("ERROR!\n");
     }
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
             fflush(stdout);
             scanf("%s", input);
             con = host(input);
-            reversi_run(type, con);
+            reversi_run(con);
         }
         else if (type == 2)
         {
@@ -58,14 +58,14 @@ int main(int argc, char **argv)
             fflush(stdout);
             scanf("%s", input[1]);
             con = client(input);
-            reversi_run(type, con);
+            reversi_run(con);
         }
         else if (type == 3)
         {
-            reversi_run(3, 0);
+            reversi_run(0);
         }
         else if (type == 4){
-            reversi_run(4, 0);
+            reversi_run(0);
         }
         else printf("ERROR!\n");
     }

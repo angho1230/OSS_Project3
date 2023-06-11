@@ -12,39 +12,264 @@
 
 #include "reversi.h"
 #include "draw.h"
-#include "net.h"
 
 extern int g_mod;
 extern int g_x;
 extern int g_y;
 extern char messages[7][51];
 extern int board[8][8];
+extern int type;
 
-int reversi_run(int type, int conn_fd)
+int reversi_run(int conn_fd)
 {
     int turn = 1;
-    int winner;
+    int player = type == 2 ? -1 : 1;
     g_mod = MOVE;
     g_x = 3;
     g_y = 0;
     reversi_init();
     coord_st coord = {0, 0, 1};
-    text txt;
+    text txt_s;
+    text txt_r;
+    int str_len = 0;
+
+
     if (type == 1)
-    {/*
+    {
+        while (1)
+        {
+            int is_r = 0, is_in = 0;
+            while (1){
+                is_r = 0; is_in = 0;
+                is_in = reversi_input(&txt_s, turn, &str_len) ;
+                is_r = recv_input(&txt_r, sizeof(text), conn_fd) ;
+                if(is_in == 1 || is_r == 1) break;
+            }
+            if (is_in == 1)
+            {
+                str_len = 0;
+                if (turn == player)
+                {
+                    if (txt_s.mod == CHAT)
+                    {
+                        add_messages(txt_s.c);
+                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        continue;
+                    }
+                    else
+                    {
+                        if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
+                        {
+                            txt_s.c[0] = '\0';
+                            continue;
+                        }
+                        if (reversi_check(coord) != 0)
+                        {
+                            txt_s.c[0] = '\0';
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
+                    if (txt_s.mod == CHAT)
+                    {
+                        add_messages(txt_s.c);
+                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        continue;
+                    }
+                    else
+                    {
+                        add_messages("Not your turn.");
+                        txt_s.c[0] = '\0';
+                        continue;
+                    }
+                }
+            }
+            else if (is_r == 1)
+            {
+                if (turn == 1)
+                {
+                    if (txt_r.mod == CHAT)
+                    {
+                        char *m = malloc(sizeof(char) * 51 + 2);
+                        sprintf(m, ">%s", txt_r.c);
+                        add_messages(m);
+                        free(m);
+                        continue;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (txt_r.mod == CHAT)
+                    {
+                        char *m = malloc(sizeof(char) * 51 + 2);
+                        sprintf(m, ">%s", txt_r.c);
+                        add_messages(m);
+                        free(m);
+                        continue;
+                    }
+                    else
+                    {
+                        if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
+                        {
+                            continue;
+                        }
+                        if (reversi_check(coord) != 0)
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                continue;
+            }
+            reversi_flip(coord);
+            turn = turn * -1;
+            if (reversi_available(turn) == 0)
+            {
+                if (reversi_available(turn * -1) == 0)
+                {
+                    reversi_refresh();
+                    break;
+                }
+            }
+            reversi_refresh();
+            coord.turn = turn;
+        }
+    }
+    else if (type == 2)
+    {
+        while (1)
+        {
+            int is_r = 0, is_in = 0;
+            while (1){
+                is_in = reversi_input(&txt_s, turn, &str_len);
+                is_r = recv_input(&txt_r, sizeof(text), conn_fd);
+                if(is_in == 1 || is_r == 1) break;
+            }
+            if (is_in == 1)
+            {
+                str_len = 0;
+                if (turn == player)
+                {
+                    if (txt_s.mod == CHAT)
+                    {
+                        add_messages(txt_s.c);
+                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        continue;
+                    }
+                    else
+                    {
+                        if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
+                        {
+                            txt_s.c[0] = '\0';
+                            continue;
+                        }
+                        if (reversi_check(coord) != 0)
+                        {
+                            txt_s.c[0] = '\0';
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
+                    if (txt_s.mod == CHAT)
+                    {
+                        add_messages(txt_s.c);
+                        send(conn_fd, &txt_s, sizeof(text), 0) ;
+                        continue;
+                    }
+                    else
+                    {
+                        add_messages("Not your turn.");
+                        txt_s.c[0] = '\0';
+                        continue;
+                    }
+                }
+            }
+            else if (is_r == 1)
+            {
+                if (turn == 1)
+                {
+                    if (txt_r.mod == CHAT)
+                    {
+                        char *m = malloc(sizeof(char) * 51 + 2);
+                        sprintf(m, ">%s", txt_r.c);
+                        add_messages(m);
+                        free(m);
+                        continue;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (txt_r.mod == CHAT)
+                    {
+                        char *m = malloc(sizeof(char) * 51 + 2);
+                        sprintf(m, ">%s", txt_r.c);
+                        add_messages(m);
+                        free(m);
+                        continue;
+                    }
+                    else
+                    {
+                        if (reversi_input_to_coord(&coord, turn, txt_s.c) != 0)
+                        {
+                            continue;
+                        }
+                        if (reversi_check(coord) != 0)
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                continue;
+            }
+            reversi_flip(coord);
+            turn = turn * -1;
+            if (reversi_available(turn) == 0)
+            {
+                if (reversi_available(turn * -1) == 0)
+                {
+                    reversi_refresh();
+                    break;
+                }
+            }
+            reversi_refresh();
+            coord.turn = turn;
+        }
+    }
+    /*
+    /*
+    if (type == 1)
+    {
         while (1)
         {
             if (turn == 1)
             {
-                while (!(reversi_input(&coord, turn, conn_fd) == 0 && g_mod == MOVE))
+                while (!(reversi_input(&txt, turn, conn_fd) == 0 && g_mod == MOVE))
                 {
                 }
             }
             else
             {
                 int s;
-                while ((recv_input(conn_fd, &txt)) != 0){
-                
+                while ((recv_input(conn_fd, &txt)) != 0)
+                {
                 }
                 else if (txt.mod == CHAT)
                 {
@@ -72,7 +297,7 @@ int reversi_run(int type, int conn_fd)
             reversi_refresh();
         }
         reversi_term();
-        return 0;*/
+        return 0;
     }
     else if (type == 2)
     {
@@ -119,7 +344,8 @@ int reversi_run(int type, int conn_fd)
         }
         reversi_term();
         return 0;
-    }
+    }*/
+    /*
     else if (type == 3)
     {
         while (1)
@@ -181,7 +407,7 @@ int reversi_run(int type, int conn_fd)
         }
         reversi_term();
         return 0;
-    }
+    }*/
 }
 
 void reversi_init()
@@ -210,7 +436,7 @@ void reversi_init()
     free(m);
     return;
 }
-
+/*
 int reversi_input(coord_st *coord, int turn, int conn_fd)
 {
     char c;
@@ -286,7 +512,67 @@ int reversi_input(coord_st *coord, int turn, int conn_fd)
     text buf;
     strcpy(buf.c, str);
     buf.mod = g_mod;
-    send(conn_fd, &buf, sizeof(buf), 0);
+        send(conn_fd, &buf, sizeof(buf), 0);
+    return 0;
+}*/
+
+int reversi_input(text *txt, int turn, int* str_len)
+{
+    char c;
+    int max_str = 50;
+    int print = 1;
+    c = key_input(print);
+    if (c == 0)
+    {
+    }
+    else if (c == '\t')
+    {
+        if (g_mod == CHAT)
+        {
+            g_mod = MOVE;
+            txt->mod = MOVE;
+            char *m = (char *)malloc(sizeof(char) * 51);
+            if (turn == -1)
+                sprintf(m, "Enter next move (WHITE)");
+            if (turn == 1)
+                sprintf(m, "Enter next move (BLACK)");
+            message(m);
+            free(m);
+        }
+        else
+        {
+            g_mod = CHAT;
+            txt->mod = CHAT;
+            message("Type your message here:");
+        }
+    }
+    else if (c == 8 || c == 127)
+    {
+        if (*str_len > 0)
+        {
+            txt->c[*str_len - 1] = '\0';
+            *str_len--;
+            print = 1;
+        }
+    }
+    else if (c == '\n')
+    {
+        return 1;
+    }
+    else
+    {
+        if (*str_len >= max_str - 1)
+        {
+            print = 0;
+            if (*str_len == max_str)
+            {
+                return 0;
+            }
+        }
+        txt->c[*str_len] = c;
+        *str_len++;
+        txt->c[*str_len] = '\0';
+    }
     return 0;
 }
 
@@ -321,30 +607,7 @@ int reversi_input_to_coord(coord_st *coord, int turn, char *str)
     return 0;
 }
 
-int reversi_oppnent_input(coord_st *coord, int turn)
-{
-    coord->turn = turn;
-    scanf("%d", &coord->x_co); // fix
-    if (!(coord->x_co > 0 && coord->x_co < 9))
-    {
-        message("Wrong input! Try again!");
-    }
-    else
-    {
-        message("What is your next move?");
-    }
-    scanf("%d", &coord->y_co); // fix
-    if (!(coord->y_co > 0 && coord->y_co < 9))
-    {
-        message("Wrong input! Try again!");
-    }
-    else
-    {
-        message("What is your next move?");
-    }
 
-    return 1;
-}
 int reversi_check(coord_st coord)
 {
     if (!((0 < coord.x_co && coord.x_co < 9) && (0 < coord.y_co && coord.y_co < 9)))
@@ -358,6 +621,7 @@ int reversi_check(coord_st coord)
     }
     return 1;
 }
+
 int reversi_flip(coord_st coord)
 {
     int x = coord.x_co - 1;
