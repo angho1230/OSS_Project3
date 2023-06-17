@@ -22,7 +22,7 @@ int reversi_refresh(char * name1, char*name2);
 int reversi_check(coord_st coord);
 int reversi_input(text * txt, int turn, int* str_len);
 int reversi_input_to_coord(coord_st *coord, int turn, text t);
-void reversi_term();
+void reversi_term(char * name1, char * name2);
 void add_messages(char * m);
 int reversi_available(int turn);
 int reversi_score(int player);

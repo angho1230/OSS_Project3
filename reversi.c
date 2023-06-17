@@ -46,10 +46,10 @@ int reversi_run(int conn_fd)
     coord_st coord = {0, 0, 1};
     text txt_s;
     text txt_r;
-    
+
     if (type == 1)
     {
-        strcpy(&txt_r.name[0],"player");
+        strcpy(&txt_r.name[0], "player");
         int str_len = 0;
         printf("what is your name? ");
         scanf("%20s", &(txt_s.name[0]));
@@ -122,7 +122,7 @@ int reversi_run(int conn_fd)
                     if (txt_r.mod == CHAT)
                     {
                         char *m = malloc(sizeof(char) * 80);
-                        sprintf(m, "%s> %s",txt_r.name, txt_r.c);
+                        sprintf(m, "%s> %s", txt_r.name, txt_r.c);
                         add_messages(m);
                         free(m);
                         continue;
@@ -137,7 +137,7 @@ int reversi_run(int conn_fd)
                     if (txt_r.mod == CHAT)
                     {
                         char *m = malloc(sizeof(char) * 80);
-                        sprintf(m, "%s> %s",txt_r.name, txt_r.c);
+                        sprintf(m, "%s> %s", txt_r.name, txt_r.c);
                         add_messages(m);
                         free(m);
                         continue;
@@ -174,10 +174,11 @@ int reversi_run(int conn_fd)
             reversi_refresh(txt_s.name, txt_r.name);
             coord.turn = turn;
         }
+        reversi_term(txt_s.name, txt_r.name);
     }
     else if (type == 2)
     {
-        strcpy(&txt_r.name[0],"player");
+        strcpy(&txt_r.name[0], "player");
         int str_len = 0;
         printf("what is your name? ");
         scanf("%20s", &(txt_s.name[0]));
@@ -250,7 +251,7 @@ int reversi_run(int conn_fd)
                     if (txt_r.mod == CHAT)
                     {
                         char *m = malloc(sizeof(char) * 80);
-                        sprintf(m, "%s> %s",txt_r.name, txt_r.c);
+                        sprintf(m, "%s> %s", txt_r.name, txt_r.c);
                         add_messages(m);
                         free(m);
                         continue;
@@ -265,7 +266,7 @@ int reversi_run(int conn_fd)
                     if (txt_r.mod == CHAT)
                     {
                         char *m = malloc(sizeof(char) * 80);
-                        sprintf(m, "%s> %s",txt_r.name, txt_r.c);
+                        sprintf(m, "%s> %s", txt_r.name, txt_r.c);
                         add_messages(m);
                         free(m);
                         continue;
@@ -274,18 +275,8 @@ int reversi_run(int conn_fd)
                     {
                         if (reversi_input_to_coord(&coord, turn, txt_r) != 0)
                         {
-                            /*
-                            char *m = malloc(sizeof(char) * 51 + 2);
-                            sprintf(m, "move (%s)", txt_r.c);
-                            add_messages(m);
-                            free(m);*/
                             continue;
                         }
-                        /*
-                        char *m = malloc(sizeof(char) * 80);
-                        sprintf(m, "move (%d, %d)", coord.x_co, coord.y_co);
-                        add_messages(m);
-                        free(m);*/
                     }
                 }
             }
@@ -306,13 +297,14 @@ int reversi_run(int conn_fd)
             reversi_refresh(txt_r.name, txt_s.name);
             coord.turn = turn;
         }
+        reversi_term(txt_r.name, txt_s.name);
     }
     else if (type == 3)
-    {   
-        strcpy(&txt_r.name[0],"COM");
+    {
+        strcpy(&txt_r.name[0], "COM");
         int str_len = 0;
-        strcpy(&txt_s.name[0],"Player");
-        reversi_init(txt_s.name, txt_r.name);
+        strcpy(&txt_s.name[0], "Player");
+        reversi_init("Player", "COM");
         while (1)
         {
             if (turn == 1)
@@ -339,15 +331,13 @@ int reversi_run(int conn_fd)
             {
                 if (reversi_available(turn * -1) == 0)
                 {
-                    reversi_refresh(txt_s.name, "COM");
+                    reversi_refresh("Player", "COM");
                     break;
                 }
             }
-            reversi_refresh(txt_s.name, "COM");
+            reversi_refresh("Player", "COM");
         }
-        getch();
-        reversi_term();
-        return 0;
+        reversi_term("Player", "COM");
     }
     else if (type == 4)
     {
@@ -400,13 +390,12 @@ int reversi_run(int conn_fd)
             }
             reversi_refresh("player1", "player2");
         }
-        getch();
-        reversi_term();
-        return 0;
+        reversi_term("player1", "player2");
     }
+    return 0;
 }
 
-void reversi_init(char * name1, char*name2)
+void reversi_init(char *name1, char *name2)
 {
     for (int i = 0; i < 8; i++)
     {
@@ -494,7 +483,7 @@ int reversi_input(text *txt, int turn, int *str_len)
 
 int reversi_input_to_coord(coord_st *coord, int turn, text t)
 {
-    char * str = strdup(t.c);
+    char *str = strdup(t.c);
     char *x_s = strtok(str, " ");
     char *y_s = strtok(0x0, " ");
     if (x_s == 0x0 || y_s == 0x0)
@@ -668,7 +657,7 @@ int reversi_flip(coord_st coord)
 
     return 0;
 }
-int reversi_refresh(char * name1, char*name2)
+int reversi_refresh(char *name1, char *name2)
 {
     for (int x = 0; x < 8; x++)
     {
@@ -682,29 +671,37 @@ int reversi_refresh(char * name1, char*name2)
         }
     }
 
-    score_print(name1,name2, reversi_score(1), reversi_score(-1));
+    score_print(name1, name2, reversi_score(1), reversi_score(-1));
 
     refresh();
     return 0;
 }
-void reversi_term()
+void reversi_term(char *n1, char *n2)
 {
     int player1 = reversi_score(1);
     int player2 = reversi_score(-1);
     if (player1 > player2)
     {
-        add_messages("Winner is Player1!");
+
+        char *m = (char *)malloc(sizeof(char) * 80);
+        sprintf(m, "<<<<Winner is %s>>>>",n1);
+        add_messages(m);
+        free(m);
     }
     else if (player1 < player2)
     {
-        add_messages("Winner is Player2!");
+        char *m = (char *)malloc(sizeof(char) * 80);
+        sprintf(m, "<<<<Winner is %s>>>>", n2);
+        add_messages(m);
+        free(m);
     }
     else
     {
         add_messages("Score is even!!");
     }
+    message("Press any key to exit.\n");
     getch();
-    add_messages("Press any key to exit.");
+    getch();
     endwin();
 }
 void add_messages(char *m)
