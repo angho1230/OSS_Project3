@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     else if (argc == 1)
     {
         
-        printf("Welcom! Choose mod(Host: 1, Client: 2, Single-player: 3, local-multi: 4) : ");
+        printf("Welcom! Choose mod(Host: 1, Client: 2, Single-player: 3, local-multi: 4, 0-player 5 :");
         scanf("%d", &type);
         if (type == 1)
         {
@@ -66,6 +66,9 @@ int main(int argc, char **argv)
             reversi_run(0);
         }
         else if (type == 4){
+            reversi_run(0);
+        }
+        else if(type ==5){
             reversi_run(0);
         }
         else printf("ERROR!\n");

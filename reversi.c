@@ -301,10 +301,10 @@ int reversi_run(int conn_fd)
     }
     else if (type == 3)
     {
-        strcpy(&txt_r.name[0], "COM");
+        strcpy(&txt_r.name[0], "AI");
         int str_len = 0;
         strcpy(&txt_s.name[0], "Player");
-        reversi_init("Player", "COM");
+        reversi_init("Player", "AI");
         while (1)
         {
             if (turn == 1)
@@ -331,13 +331,13 @@ int reversi_run(int conn_fd)
             {
                 if (reversi_available(turn * -1) == 0)
                 {
-                    reversi_refresh("Player", "COM");
+                    reversi_refresh("Player", "AI");
                     break;
                 }
             }
-            reversi_refresh("Player", "COM");
+            reversi_refresh("Player", "AI");
         }
-        reversi_term("Player", "COM");
+        reversi_term("Player", "AI");
     }
     else if (type == 4)
     {
@@ -390,7 +390,40 @@ int reversi_run(int conn_fd)
             }
             reversi_refresh("player1", "player2");
         }
+
         reversi_term("player1", "player2");
+    }
+    else if (type == 5)
+    {
+        strcpy(&txt_r.name[0], "Black");
+        int str_len = 0;
+        strcpy(&txt_s.name[0], "White");
+        reversi_init("Black", "White");
+        while (1)
+        {
+            if (turn == 1)
+            {
+                reversi_ai_move(&coord, turn);
+                sleep(1);
+            }
+            else
+            {
+                reversi_ai_move(&coord, turn);
+                sleep(1);
+            }
+            reversi_flip(coord);
+            turn = -1 * turn;
+            if (reversi_available(turn) == 0)
+            {
+                if (reversi_available(turn * -1) == 0)
+                {
+                    reversi_refresh("Black", "White");
+                    break;
+                }
+            }
+            reversi_refresh("Black", "White");
+        }
+        reversi_term("Black", "White");
     }
     return 0;
 }
@@ -684,7 +717,7 @@ void reversi_term(char *n1, char *n2)
     {
 
         char *m = (char *)malloc(sizeof(char) * 80);
-        sprintf(m, "<<<<Winner is %s>>>>",n1);
+        sprintf(m, "<<<<Winner is %s>>>>", n1);
         add_messages(m);
         free(m);
     }
@@ -700,8 +733,11 @@ void reversi_term(char *n1, char *n2)
         add_messages("Score is even!!");
     }
     message("Press any key to exit.\n");
+
     getch();
     getch();
+    getch();
+    timeout(100000000);
     endwin();
 }
 void add_messages(char *m)
@@ -934,6 +970,6 @@ void reversi_ai_move(coord_st *coord, int turn)
     coord->y_co = my + 1;
     coord->turn = turn;
     char *m = (char *)malloc(sizeof(char) * 80);
-    sprintf(m, "AI is moving..(%d %d)", mx, my);
+    sprintf(m, "AI is moving..(%d %d)", mx+1, my+1);
     add_messages(m);
 }
