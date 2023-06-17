@@ -191,6 +191,8 @@ void score_print(char * name1, char * name2, int score1, int score2)
 {
 	int row, col;
 	getmaxyx(stdscr, row, col);
+	mvprintf( 7, col -30, "              ");
+	mvprintf( 9, col -30, "              ");
 	mvprintw( 7, col -30, "%s : %d",name1, score1);
 	mvprintw( 9, col -30 , "%s : %d",name2, score2);
 }
