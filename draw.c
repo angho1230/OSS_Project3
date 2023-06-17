@@ -179,7 +179,7 @@ void print_messages(char (*messages)[80])
 	for (int i = 0; i < 7; i++)
 	{
 		move(row - 3 - i, 5);
-		for (int j = 0; j < 50; j++)
+		for (int j = 0; j < 80; j++)
 		{
 			printw(" ");
 		}
