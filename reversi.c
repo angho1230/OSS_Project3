@@ -148,12 +148,6 @@ int reversi_run(int conn_fd)
                         {
                             continue;
                         }
-                        /*
-                        char *m = malloc(sizeof(char) * 80);
-                        sprintf(m, "%s move (%d, %d)",txt_r.name ,coord.x_co, coord.y_co);
-                        add_messages(m);
-                        free(m);
-                        */
                     }
                 }
             }
@@ -458,7 +452,7 @@ int reversi_input(text *txt, int turn, int *str_len)
 {
     char c;
     int max_str = 50;
-    int print = (*str_len) >= max_str-1 ? 0 : 1;
+    int print = (*str_len) >= max_str ? 0 : 1;
     c = key_input(print);
     if (c == 0)
     {
