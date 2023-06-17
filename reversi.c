@@ -735,9 +735,7 @@ void reversi_term(char *n1, char *n2)
     message("Press any key to exit.\n");
 
     getch();
-    getch();
-    getch();
-    timeout(100000000);
+    timeout(10000);
     endwin();
 }
 void add_messages(char *m)
