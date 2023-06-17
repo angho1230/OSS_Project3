@@ -146,7 +146,7 @@ char key_input(int print)
 	{
 	case '\t':
 	case '\n':
-		for (int i = 0; i < 50; i++)
+		for (int i = 0; i < 51; i++)
 		{
 			mvprintw(g_y, 28 + i, " ");
 		}
