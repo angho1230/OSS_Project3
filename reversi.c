@@ -452,7 +452,7 @@ int reversi_input(text *txt, int turn, int *str_len)
 {
     char c;
     int max_str = 50;
-    int print = (*str_len) > max_str ? 0 : 1;
+    int print = (*str_len) >= max_str ? 0 : 1;
     c = key_input(print);
     if (c == 0)
     {
@@ -493,7 +493,7 @@ int reversi_input(text *txt, int turn, int *str_len)
     }
     else
     {
-        if (*str_len > max_str-1)
+        if (*str_len > max_str-2)
         {
                 return 0;
         }
