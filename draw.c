@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <time.h>
 #include <ncurses.h>
+#include <string.h>
+#include <unistd.h>
 #include "draw.h"
 
 extern int g_mod;
@@ -63,7 +65,15 @@ void draw_table()
 {
 	initscr();
 	clear();
+	int row = 0, col = 0;
 
+    while(row < 38 || col < 90){
+		getmaxyx(stdscr,row,col);
+		mvprintw(0,0,"This screen has %d rows and %d columns\n try make at least 38 rows and 90 columns",row,col);
+		refresh();
+		sleep(1);
+    }
+	clear();
 	// noecho();
 	cbreak();
 	curs_set(2);
@@ -97,8 +107,6 @@ void draw_table()
 			mvaddch((y + 1) * PADDING_Y + START_Y, (x + 1) * PADDING_X + START_X, ACS_PLUS);
 		}
 	}
-
-	int row, col;
 	curs_set(2);
 	getmaxyx(stdscr, row, col);
 	rectangle(row - 10, 3, row - 1, col - 3);

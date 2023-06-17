@@ -46,7 +46,6 @@ int reversi_run(int conn_fd)
     coord_st coord = {0, 0, 1};
     text txt_s;
     text txt_r;
-
     if (type == 1)
     {
         strcpy(&txt_r.name[0], "player");
