@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "reversi.h"
-
+/*
 int g_mod;
 int g_x;
 int g_y;
 char messages[7][51];
-int board[8][8];
+int board[8][8];*/
 int type;
 
 int main(int argc, char **argv)

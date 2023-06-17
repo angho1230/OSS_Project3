@@ -17,5 +17,5 @@ void draw_table();
 void message_color(char *m, int color);
 void message(char *m);
 char key_input(int print);
-void print_messages(char (*messages)[51]);
-void score_print(int score1, int score2);
+void print_messages(char (*messages)[80]);
+void score_print(char * name1, char * name2, int score1, int score2);

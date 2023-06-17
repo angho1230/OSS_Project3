@@ -172,7 +172,7 @@ char key_input(int print)
 	return c;
 }
 
-void print_messages(char (*messages)[51])
+void print_messages(char (*messages)[80])
 {
 	int row, col;
 	getmaxyx(stdscr, row, col);
@@ -187,10 +187,10 @@ void print_messages(char (*messages)[51])
 	}
 }
 
-void score_print(int score1, int score2)
+void score_print(char * name1, char * name2, int score1, int score2)
 {
 	int row, col;
 	getmaxyx(stdscr, row, col);
-	mvprintw( 7, col -30, "player1 : %d", score1);
-	mvprintw( 9, col -30 , "player2 : %d", score2);
+	mvprintw( 7, col -30, "%s : %d",name1, score1);
+	mvprintw( 9, col -30 , "%s : %d",name2, score2);
 }
