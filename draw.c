@@ -146,7 +146,7 @@ char key_input(int print)
 		break;
 	case 127:
 	case '\b':
-		if (g_x >= 28)
+		if (g_x > 28)
 		{
 			mvprintw(g_y, g_x, " ");
 			g_x--;

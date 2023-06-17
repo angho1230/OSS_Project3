@@ -457,7 +457,7 @@ void reversi_init(char *name1, char *name2)
 int reversi_input(text *txt, int turn, int *str_len)
 {
     char c;
-    int max_str = 10;
+    int max_str = 50;
     int print = 1;
     c = key_input(print);
     if (c == 0)
@@ -872,7 +872,6 @@ void reversi_ai_move(coord_st *coord, int turn)
         {
             if (board[x][y] == 2)
             {
-                // check from right
                 for (int dir = 0; dir < 8; dir++)
                 {
                     int t_x = x;
