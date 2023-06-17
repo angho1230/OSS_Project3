@@ -46,13 +46,14 @@ int reversi_run(int conn_fd)
     coord_st coord = {0, 0, 1};
     text txt_s;
     text txt_r;
-    strcpy(&txt_r.name[0],"player");
-    int str_len = 0;
-    printf("what is your name? ");
-    scanf("%20s", &(txt_s.name[0]));
-    reversi_init(txt_s.name, txt_r.name);
+    
     if (type == 1)
     {
+        strcpy(&txt_r.name[0],"player");
+        int str_len = 0;
+        printf("what is your name? ");
+        scanf("%20s", &(txt_s.name[0]));
+        reversi_init(txt_s.name, txt_r.name);
         while (1)
         {
             int is_in = 0;
@@ -176,6 +177,11 @@ int reversi_run(int conn_fd)
     }
     else if (type == 2)
     {
+        strcpy(&txt_r.name[0],"player");
+        int str_len = 0;
+        printf("what is your name? ");
+        scanf("%20s", &(txt_s.name[0]));
+        reversi_init(txt_s.name, txt_r.name);
         while (1)
         {
             int is_in = 0;
@@ -302,7 +308,11 @@ int reversi_run(int conn_fd)
         }
     }
     else if (type == 3)
-    {
+    {   
+        strcpy(&txt_r.name[0],"COM");
+        int str_len = 0;
+        strcpy(&txt_s.name[0],"Player");
+        reversi_init(txt_s.name, txt_r.name);
         while (1)
         {
             if (turn == 1)
@@ -341,6 +351,7 @@ int reversi_run(int conn_fd)
     }
     else if (type == 4)
     {
+        reversi_init("player1", "player2");
         while (1)
         {
             char *m = (char *)malloc(sizeof(char) * 80);
