@@ -442,7 +442,14 @@ void reversi_init(char *name1, char *name2)
     reversi_available(1);
     reversi_refresh(name1, name2);
     char *m = (char *)malloc(sizeof(char) * 80);
-    sprintf(m, "Enter next move (BLACK)");
+    if (type == 2)
+    {
+        sprintf(m, "Enter next move (WHITE)");
+    }
+    else
+    {
+        sprintf(m, "Enter next move (BLACK)");
+    }
     message(m);
     free(m);
     return;
@@ -463,10 +470,12 @@ int reversi_input(text *txt, int turn, int *str_len)
             g_mod = MOVE;
             txt->mod = MOVE;
             char *m = (char *)malloc(sizeof(char) * 80);
-            if (turn == -1)
+            if (type==2 || (type!=1 && turn ==-1)){
                 sprintf(m, "Enter next move (WHITE)");
-            if (turn == 1)
+            }
+            if (type==1 || (type!=2 && turn ==1)){
                 sprintf(m, "Enter next move (BLACK)");
+            }
             message(m);
             free(m);
         }
@@ -494,7 +503,7 @@ int reversi_input(text *txt, int turn, int *str_len)
     {
         if (*str_len >= max_str)
         {
-                return 0;
+            return 0;
         }
         txt->c[*str_len] = c;
         *str_len = (*str_len) + 1;
@@ -956,6 +965,6 @@ void reversi_ai_move(coord_st *coord, int turn)
     coord->y_co = my + 1;
     coord->turn = turn;
     char *m = (char *)malloc(sizeof(char) * 80);
-    sprintf(m, "AI is moving..(%d %d)", mx+1, my+1);
+    sprintf(m, "AI is moving..(%d %d)", mx + 1, my + 1);
     add_messages(m);
 }
